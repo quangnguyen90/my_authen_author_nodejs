@@ -6,6 +6,8 @@ var bodyParser = require("body-parser");
 var userRouter = require("./routers/user");
 var bookRouter = require("./routers/book");
 var borrowBookRouter = require("./routers/borrowBook");
+var userService = require("./services/userService");
+var jwt = require("jsonwebtoken");
 var connectDB = require("./config/dbConnect");
 var app = express();
 
@@ -30,6 +32,29 @@ app.get("/sign-up", (req, res, next) => {
 
 app.get("/login", (req, res, next) => {
   res.sendFile(path.join(__dirname, "/views/login.html"));
+});
+
+app.get("/home", async function (req, res) {
+  var token = req.cookies.token;
+  var decodeUser = jwt.verify(token, process.env.JWT_SECRET);
+  var user = await userService.getDetailUser(decodeUser._id);
+  try {
+    if (user && user.role === "admin") {
+      res.sendFile(path.join(__dirname, "/views/homeAdmin.html"));
+    }
+
+    if (user && user.role === "user") {
+      res.sendFile(path.join(__dirname, "/views/homeUser.html"));
+    }
+  } catch (error) {
+    if (error) {
+      return res.status(500).json({
+        error: false,
+        status: 500,
+        message: "Internal server error",
+      });
+    }
+  }
 });
 
 app.listen(3000);

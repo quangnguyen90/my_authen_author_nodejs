@@ -57,7 +57,7 @@
           if (!data.error && data.status === 200) {
             alert(data.message);
             setCookie("token", data.accessToken, 1);
-            window.location.href = "/";
+            window.location.href = "/home";
           } else {
             alert(data.message);
           }
