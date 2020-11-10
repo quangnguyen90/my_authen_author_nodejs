@@ -23,6 +23,30 @@ let checkUser = async (req, res, next) => {
   }
 }
 
+let checkExistedEmail = async (req, res, next) => {
+  try {
+    var user = await userService.checkEmail(req.body.email);
+    if (!user) {
+      return res.status(400).json({
+        error: false,
+        status: 400,
+        message: "Email is not existed",
+      });
+    } else {
+      req.user = user;
+      next();
+    }
+  } catch (error) {
+    if (error) {
+      return res.status(500).json({
+        error: false,
+        status: 500,
+        message: "Internal server error",
+      });
+    }
+  }
+}
+
 let checkAuth = async (req, res, next) => {
   var token = req.cookies.token || req.headers.authorization.trim().split("Bearer ")[1];
   var decodeUser = jwt.verify(token, process.env.JWT_SECRET);
@@ -75,6 +99,7 @@ let checkAdmin = (req, res, next) => {
 
 module.exports = {
   checkUser,
+  checkExistedEmail,
   checkAuth,
   checkAdmin
 };
