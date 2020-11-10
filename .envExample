@@ -1,0 +1,4 @@
+DB_PROTOCOL=mongodb
+DB_HOST=localhost
+DB_NAME=my_authen_author_nodejs
+JWT_SECRET=my_secret_code

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+  </head>
+  <link
+    rel="stylesheet"
+    href="/public/css/bootstrap-4.5.0-dist/css/bootstrap.min.css"
+  />
+  <link rel="stylesheet" href="./public/css/home.css" />
+
+  <body>
+    <nav class="nav">
+      <a class="nav-link" href="/sign-up">Sign Up</a>
+      <a class="nav-link" href="/login">Login</a>
+    </nav>
+
+    <form>
+      <legend>Login</legend>
+
+      <div class="form-group">
+        <label for="">Email</label>
+        <input type="text" class="form-control" id="email" name="email" />
+      </div>
+
+      <div class="form-group">
+        <label for="">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+        />
+      </div>
+
+      <button type="button" id="btn-login" class="btn btn-primary">
+        Login
+      </button>
+    </form>
+  </body>
+  <script src="./public/js/jquery-3.5.1.min.js"></script>
+  <script>
+    $("#btn-login").click(() => {
+      var email = $("#email").val();
+      var password = $("#password").val();
+      $.ajax({
+        url: "/api/users/login",
+        type: "POST",
+        data: {
+          email,
+          password,
+        },
+      })
+        .then((data) => {
+          if (!data.error && data.status === 200) {
+            alert(data.message);
+            setCookie("token", data.accessToken, 1);
+            window.location.href = "/";
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch((err) => {
+          alert(data.message);
+        });
+    });
+
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(";");
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == " ") {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+  </script>
+</html>
