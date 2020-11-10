@@ -3,30 +3,24 @@ let tokenService = require("../services/tokenService");
 let bcrypt = require("bcrypt");
 //let jwt = require("jsonwebtoken");
 let jwtUtils = require("../util/jwtComponent");
-const SALT_ROUND = 10;
 
-function signUpController(req, res) {
-  let { email, username, password } = req.body;
-  bcrypt.genSalt(SALT_ROUND, function (err, salt) {
-    bcrypt.hash(password, salt, function (err, hash) {
-      userService
-        .signUp(email, username, hash)
-        .then(function () {
-          return res.json({
-            error: false,
-            status: 200,
-            message: "Signup OK",
-          });
-        })
-        .catch(function () {
-          return res.json({
-            error: true,
-            status: 500,
-            message: "Signup fail",
-          });
-        });
+let signUpController = async (req, res) => {
+  try {
+    await userService.signUp(req.body);
+    return res.status(200).json({
+      error: false,
+      status: 200,
+      message: "Signup OK",
     });
-  });
+  } catch (error) {
+    if (error) {
+      return res.status(400).json({
+        error: true,
+        status: 400,
+        message: "Signup fail",
+      });
+    }
+  }
 }
 
 function loginController(req, res) {

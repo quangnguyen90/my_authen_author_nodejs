@@ -1,17 +1,27 @@
 let UserModel = require("../models/userModel");
-function signUp(email, username, password) {
-  return UserModel.create({
-    email,
-    username,
-    password,
-  });
+let bcrypt = require("bcrypt");
+const SALT_ROUND = 10;
+
+let signUp = (inforUser) => {
+  let { email, username, password } = inforUser;
+  if (username && password) {
+    const salt = bcrypt.genSaltSync(SALT_ROUND);
+    const hash = bcrypt.hashSync(password, salt);
+    return UserModel.create({
+      email,
+      username,
+      password: hash,
+    });
+  } else {
+    throw "Error: Username & Password are required";
+  }
 }
 
-function login(email, password) {
+let login = (email, password) => {
   return UserModel.findOne({ email, password });
 }
 
-function checkEmail(email) {
+let checkEmail = (email) => {
   return UserModel.findOne({ email });
 }
 

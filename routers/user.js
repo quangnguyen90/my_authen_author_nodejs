@@ -4,7 +4,7 @@ var router = express.Router();
 var authMiddlewares = require("../middlewares/auth");
 
 router.post("/login", userController.loginController);
-router.post("/", authMiddlewares.checkUser, userController.signUpController);
+router.post("/sign-up", authMiddlewares.checkUser, userController.signUpController);
 
 router.use(authMiddlewares.checkAuth);
 router.use(authMiddlewares.checkAdmin);
