@@ -15,18 +15,23 @@ let signUp = (inforUser) => {
   } else {
     throw "Error: Username & Password are required";
   }
-}
+};
 
 let login = (email, password) => {
   return UserModel.findOne({ email, password });
-}
+};
 
 let checkEmail = (email) => {
   return UserModel.findOne({ email });
-}
+};
+
+let getDetailUser = (id) => {
+  return UserModel.findOne({ _id: id });
+};
 
 module.exports = {
   signUp,
   login,
   checkEmail,
+  getDetailUser,
 };

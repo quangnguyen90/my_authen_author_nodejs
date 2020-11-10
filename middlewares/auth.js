@@ -1,5 +1,5 @@
 var userService = require("../services/userService");
-var jwt = require('jsonwebtoken');
+var jwt = require("jsonwebtoken");
 let checkUser = async (req, res, next) => {
   try {
     var user = await userService.checkEmail(req.body.email);
@@ -21,7 +21,7 @@ let checkUser = async (req, res, next) => {
       });
     }
   }
-}
+};
 
 let checkExistedEmail = async (req, res, next) => {
   try {
@@ -45,15 +45,18 @@ let checkExistedEmail = async (req, res, next) => {
       });
     }
   }
-}
+};
 
 let checkAuth = async (req, res, next) => {
-  var token = req.cookies.token || req.headers.authorization.trim().split("Bearer ")[1];
+  var token =
+    req.cookies.token ||
+    req.body.token ||
+    req.headers.authorization.trim().split("Bearer ")[1];
   var decodeUser = jwt.verify(token, process.env.JWT_SECRET);
   var user = await userService.getDetailUser(decodeUser._id);
   try {
-    if (!user) {
-      req.user = user;
+    if (user) {
+      req.userLocal = user;
       next();
     } else {
       return res.json({
@@ -62,8 +65,7 @@ let checkAuth = async (req, res, next) => {
         message: "Please login",
       });
     }
-  }
-  catch (error) {
+  } catch (error) {
     if (error) {
       return res.status(500).json({
         error: false,
@@ -72,11 +74,11 @@ let checkAuth = async (req, res, next) => {
       });
     }
   }
-}
+};
 
 let checkAdmin = (req, res, next) => {
   try {
-    if (req.user.role === 'admin') {
+    if (req.userLocal.role === "admin") {
       next();
     } else {
       return res.json({
@@ -85,8 +87,7 @@ let checkAdmin = (req, res, next) => {
         message: "You do not have permission",
       });
     }
-  }
-  catch (error) {
+  } catch (error) {
     if (error) {
       return res.status(500).json({
         error: false,
@@ -95,11 +96,11 @@ let checkAdmin = (req, res, next) => {
       });
     }
   }
-}
+};
 
 module.exports = {
   checkUser,
   checkExistedEmail,
   checkAuth,
-  checkAdmin
+  checkAdmin,
 };
