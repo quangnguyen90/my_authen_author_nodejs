@@ -21,7 +21,7 @@ let signUpController = async (req, res) => {
       });
     }
   }
-}
+};
 
 let loginController = (req, res) => {
   let { password } = req.body;
@@ -65,7 +65,7 @@ let loginController = (req, res) => {
         .then((token) => {
           return (refreshToken = token);
         });
-
+      user["password"] = undefined;
       tokenService.getDetail(user._id).then(function (checkToken) {
         if (!checkToken) {
           tokenService.addToken(user._id, refreshToken).then(function () {
@@ -75,20 +75,24 @@ let loginController = (req, res) => {
               message: "Login OK",
               accessToken: accessToken,
               refreshToken: refreshToken,
+              data: {
+                user: req.user,
+              },
             });
           });
         } else {
-          tokenService
-            .updateToken(user._id, refreshToken)
-            .then(function () {
-              return res.json({
-                error: false,
-                status: 200,
-                message: "Login OK",
-                accessToken: accessToken,
-                refreshToken: refreshToken,
-              });
+          tokenService.updateToken(user._id, refreshToken).then(function () {
+            return res.json({
+              error: false,
+              status: 200,
+              message: "Login OK",
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+              data: {
+                user: req.user,
+              },
             });
+          });
         }
       });
     } else {
@@ -99,7 +103,7 @@ let loginController = (req, res) => {
       });
     }
   });
-}
+};
 
 module.exports = {
   signUpController,
